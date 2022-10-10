@@ -87,7 +87,7 @@ void loop() {
     }
     if (bme.readTemperature()>max_temp){
       Display.show("Open");
-      Serial.println("Shut windows");
+      Serial.println("Open windows");
       while (received != '\n'){
         char received = Serial.read();
       }
