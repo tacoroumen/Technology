@@ -1,6 +1,6 @@
 ## Technology
 
-### Link naar de gemaakt opdracht code
+### Link naar de gemaakt opdracht hun code.
 
 **[Opdracht 6](Tech%20opdracht%206/src/main.cpp)**  
   
