@@ -20,5 +20,5 @@
   
 **[Opdracht 14](Tech%20opdracht%2014/src/main.cpp)**  
   
-**[Eigen opdracht / opdtacht 15](temperature/src/main.cpp)**  
+**[Eigen opdracht / opdracht 15](temperature/src/main.cpp)**  
   
