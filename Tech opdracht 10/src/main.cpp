@@ -88,6 +88,7 @@ void loop() {
     if (count>0){
       count --;
       lightcount --;
+      i = 0;
     }
     lastdebouncebutton1 = millis();
     Serial.println(count);
