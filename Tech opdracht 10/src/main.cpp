@@ -73,7 +73,54 @@ void led_blink2(int count) {
 }
 
 void loop() {
-if (count==max_allowed_people && i != 4){
+  // put your main code here, to run repeatedly:
+  if (digitalRead(button2)==LOW && (millis()-lastdebouncebutton2)>= debounce)
+  { 
+    if (count<9999){
+      count ++;
+      lightcount ++;
+    }
+    lastdebouncebutton2 = millis();
+    Serial.println(count);
+  }
+  if (digitalRead(button1)==LOW && (millis()-lastdebouncebutton1)>= debounce)
+  { 
+    if (count>0){
+      count --;
+      lightcount --;
+    }
+    lastdebouncebutton1 = millis();
+    Serial.println(count);
+    
+  }
+  if (lightcount==4){
+    lightcount=1;
+  }
+  if (lightcount==0 && count != 0){
+    lightcount=3;
+  }
+  if (lightcount==1){
+    digitalWrite(led_yellow,HIGH);
+    digitalWrite(led_blue,LOW);
+    digitalWrite(led_green,LOW);
+  }
+  if (lightcount==2){
+    digitalWrite(led_yellow,LOW);
+    digitalWrite(led_blue,HIGH);
+    digitalWrite(led_green,LOW);
+  }
+  if (lightcount==3){
+    digitalWrite(led_yellow,LOW);
+    digitalWrite(led_blue,LOW);
+    digitalWrite(led_green,HIGH);
+  }
+  if (count==0){
+    digitalWrite(led_yellow,LOW);
+    digitalWrite(led_blue,LOW);
+    digitalWrite(led_green,LOW);
+  }
+  Display.show(count);
+  if (count==max_allowed_people && i != 4){
     while (i<3){
       digitalWrite(led_red,HIGH);
       delay(200);
