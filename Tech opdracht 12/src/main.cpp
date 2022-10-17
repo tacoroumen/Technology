@@ -29,7 +29,7 @@ unsigned long delayledoff = 0;
 unsigned long lastdebouncebutton1 = 0;
 unsigned long lastdebouncebutton2 = 0;
 int lightcount = 0;
-const int arraysize = 10;
+const int arraysize = 4;
 int sumint[arraysize];
 int i = 0;
 int pot;

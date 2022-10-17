@@ -93,31 +93,42 @@ void loop() {
     Serial.println(count);
     
   }
-  if (lightcount==4){
-    lightcount=1;
-  }
-  if (lightcount==0 && count != 0){
-    lightcount=3;
-  }
-  if (lightcount==1){
-    digitalWrite(led_yellow,HIGH);
-    digitalWrite(led_blue,LOW);
-    digitalWrite(led_green,LOW);
-  }
-  if (lightcount==2){
-    digitalWrite(led_yellow,LOW);
-    digitalWrite(led_blue,HIGH);
-    digitalWrite(led_green,LOW);
-  }
-  if (lightcount==3){
-    digitalWrite(led_yellow,LOW);
-    digitalWrite(led_blue,LOW);
-    digitalWrite(led_green,HIGH);
-  }
-  if (count==0){
-    digitalWrite(led_yellow,LOW);
-    digitalWrite(led_blue,LOW);
-    digitalWrite(led_green,LOW);
+
+  switch (lightcount){
+    case 4:
+      lightcount = 1;
+      break;
+
+    case 3:
+      digitalWrite(led_yellow,LOW);
+      digitalWrite(led_blue,LOW);
+      digitalWrite(led_green,HIGH);
+      break; 
+    
+    case 2:
+      digitalWrite(led_yellow,LOW);
+      digitalWrite(led_blue,HIGH);
+      digitalWrite(led_green,LOW);
+      break;
+    
+    case 1:
+      digitalWrite(led_yellow,HIGH);
+      digitalWrite(led_blue,LOW);
+      digitalWrite(led_green,LOW);
+      break;
+    
+    case 0:
+      if (count == 0){
+        digitalWrite(led_yellow,LOW);
+        digitalWrite(led_blue,LOW);
+        digitalWrite(led_green,LOW);
+      }
+      else {
+        lightcount = 3;
+      }
+    
+    default:
+      break;
   }
   Display.show(count);
 }
