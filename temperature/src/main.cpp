@@ -1,109 +1,75 @@
 #include <Arduino.h>
+#include <wire.h>
+#include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 #include "Display.h"
 
-const int led_red = 4;
-const int led_green = 5;
-const int led_blue = 6;
-const int led_yellow = 7;
-const int button1 = 8;
-const int button2 = 9;
-const int buzzer = 3;
-const int ir_reciever = 2;
-const int LDR = A2;
-const int NTC = A1;
-const int potmeter = A0;
-const int DHT11 = 12;
-const int seg7clock = 10;
-const int seg7data = 11;
-const int EEpromSCL = 19;
-const int EEpromSFA = 18;
-// const int NC = 13;
-const int Led_internal = 13;
-const int TX = 1;
-const int RX = 0;
-int count = 9995;
-const int max_allowed_people = 9999;
-const int debounce = 200;
-unsigned int lastcount = 0;
-unsigned long delayledoff = 0;
-unsigned long lastdebouncebutton1 = 0;
-unsigned long lastdebouncebutton2 = 0;
-int lightcount = 0;
-const int arraysize = 10;
-int sumint[arraysize];
-int i = 0;
-int pot;
 float vallue;
 float max_temp;
 float current_temp;
-int last_state;
+int last_state = 1;
 Adafruit_BME280 bme;
-#define BME_SCK 13
-#define BME_MISO 12
-#define BME_MOSI 11
-#define BME_CS 10
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 void setup()
 {
-  // put your setup code here, to run once:
-  pinMode(led_red, OUTPUT);
-  pinMode(led_green, OUTPUT);
-  pinMode(led_blue, OUTPUT);
-  pinMode(led_yellow, OUTPUT);
-  pinMode(button1, INPUT_PULLUP);
-  pinMode(button2, INPUT_PULLUP);
-  pinMode(buzzer, OUTPUT);
-  pinMode(ir_reciever, INPUT);
-  pinMode(LDR, INPUT);
-  pinMode(Led_internal, OUTPUT);
-  // pinMode (NTC,INPUT);
-  pinMode(potmeter, INPUT);
-  pinMode(TX, OUTPUT);
-  pinMode(RX, INPUT);
   Serial.begin(9600);
+  // default settings
+  if (!bme.begin(0x76))
+  {
+    Serial.println("Could not find a valid BME280 sensor, check wiring, address, sensor ID!");
+    Serial.print("SensorID was: 0x");
+    Serial.println(bme.sensorID(), 16);
+    Serial.print("        ID of 0xFF probably means a bad address, a BMP 180 or BMP 085\n");
+    Serial.print("   ID of 0x56-0x58 represents a BMP 280,\n");
+    Serial.print("        ID of 0x60 represents a BME 280.\n");
+    Serial.print("        ID of 0x61 represents a BME 680.\n");
+    while (1)
+      delay(10);
+  }
+  // put your setup code here, to run once:
   Display.clear();
 }
+
 
 void loop()
 {
   // put your main code here, to run repeatedly:
-  if (Serial.available() > 0)
+  vallue = Serial.parseFloat();
+  char received = Serial.read();
+  if (received == '\n') // Max temp is finished, so process max temp.
   {
-    vallue = Serial.parseFloat();
-    char received = Serial.read();
-    if (received == '\n') // Max temp is finished, so process max temp.
+    max_temp = vallue;
+    Serial.print("The maximum temperature is set at: ");
+    Serial.print(max_temp);
+    Serial.println(" Degrees");
+    vallue = 0;
+    last_state = 0;
+  }
+  else
+  {
+    Serial.print("Temperature = ");
+    Serial.println(bme.readTemperature());
+  }
+  if (bme.readTemperature() > max_temp && last_state != 1)
+  {
+    Display.show("Open");
+    Serial.println("Open windows");
+    while (received != '\n')
     {
-      max_temp = vallue;
-      Serial.println("The maximum temperature is set at: ");
-      Serial.print(max_temp);
-      Serial.print(" Degrees");
-      vallue = 0;
+      received = Serial.read();
     }
-    else
+    last_state = 1;
+  }
+  if (bme.readTemperature() <= max_temp && last_state != 2)
+  {
+    Display.show("Shut");
+    Serial.println("Shut windows");
+    while (received != '\n')
     {
-      Serial.print("Temperature = ");
-      Serial.print(bme.readTemperature());
+      received = Serial.read();
     }
-    if (bme.readTemperature() > max_temp && last_state !=1)
-    {
-      Display.show("Open");
-      Serial.println("Shut windows");
-      while (received != '\n'){
-        received = Serial.read();
-      }
-      last_state = 1;
-    }
-    if (bme.readTemperature() <= max_temp && last_state != 0)
-    {
-      Display.show("Shut");
-      Serial.println("Shut windows");
-      while (received != '\n'){
-        received = Serial.read();
-      }
-      last_state = 0;
-    }
+    last_state = 2;
   }
 }
